@@ -68,7 +68,7 @@
 </head>
 <body>
     <div class="Main">
-        <h1>Тестовое приложение</h1>
+        <h1 id="data">Тестовое приложение</h1>
         <img src="{{ url_for('static', filename='bot.png') }}" alt="123">
         <p></p>
         <button class="btn f-btn">Тест отправки данных</button>
@@ -81,6 +81,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
         <script>
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        let dt = urlParams.get('data');
+        let elem = document.getElementById('data');
+		elem.textContent = dt;
         let tg = window.Telegram.WebApp;
 
         let fBtn = document.getElementsByClassName("f-btn")[0]
