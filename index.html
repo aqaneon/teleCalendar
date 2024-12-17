@@ -34,6 +34,13 @@
 </body>
 </html>
 <script>
+  let tg = window.Telegram.WebApp;
+  let style = new Map();
+  let styleType = new Map();
+  style.set(1,'remote');styleType.set('remote',1);
+  style.set(2,'office');styleType.set('office',2);
+  style.set(3,'sick');styleType.set('sick',3);
+  style.set(4,'freedom');styleType.set('freedom',4);
 var Cal = function(divId) {
 
   //Сохраняем идентификатор div
@@ -52,6 +59,7 @@ var Cal = function(divId) {
 
   // Месяцы начиная с января
   this.Months =['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+  
 
   //Устанавливаем текущий месяц, год
   var d = new Date();
@@ -59,37 +67,9 @@ var Cal = function(divId) {
   this.currMonth = d.getMonth();
   this.currYear = d.getFullYear();
   this.currDay = d.getDate();
-  
-  //console.log(this.currMonth);
-  //console.log(this.currYear);
-  //console.log(this.currDay);
+
   
 };
-
-/*
-// Переход к следующему месяцу
-Cal.prototype.nextMonth = function() {
-  if ( this.currMonth == 11 ) {
-    this.currMonth = 0;
-    this.currYear = this.currYear + 1;
-  }
-  else {
-    this.currMonth = this.currMonth + 1;
-  }
-  this.showcurr();
-};
-
-// Переход к предыдущему месяцу
-Cal.prototype.previousMonth = function() {
-  if ( this.currMonth == 0 ) {
-    this.currMonth = 11;
-    this.currYear = this.currYear - 1;
-  }
-  else {
-    this.currMonth = this.currMonth - 1;
-  }
-  this.showcurr();
-};*/
 
 // Показать текущий месяц
 Cal.prototype.showcurr = function() {
@@ -108,11 +88,6 @@ Cal.prototype.showMonth = function(y, m) {
   , lastDateOfMonth =  new Date(y, m+1, 0).getDate()
   // Последний день предыдущего месяца
   , lastDayOfLastMonth = m == 0 ? new Date(y-1, 11, 0).getDate() : new Date(y, m, 0).getDate();
-
-console.log(firstDayOfMonth);
-console.log(lastDateOfMonth);
-console.log(lastDayOfLastMonth);
-
   var html = '<table>';
 
   // Запись выбранного месяца и года
@@ -188,20 +163,29 @@ console.log(lastDayOfLastMonth);
 
   // Записываем HTML в div
   document.getElementById(this.divId).innerHTML = html;
+  
 };
 
 // При загрузке окна
-window.onload = function() {
-	let tg = window.Telegram.WebApp;
-	var style = new Map();
-	var styleType = new Map();
-	style.set(1,'remote');styleType.set('remote',1);
-	style.set(2,'office');styleType.set('office',2);
-	style.set(3,'sick');styleType.set('sick',3);
-	style.set(4,'freedom');styleType.set('freedom',4);
+(window.onload = function() {
+	
 	// Начать календарь
 	var c = new Cal("divCal");			
 	c.showcurr();
+	
+	//Парсим входящий get параметр
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	let dt = urlParams.get('data').split("|");
+	
+  //Заполняем календарь данными
+	for(let d of dt) {
+		let day = d.split(":")[0];
+		let type = d.split(":")[1];
+a		$("#d_"+day+"").addClass(style.get(parseInt(type)));
+	}
+	
+	
 	$("#divCal table td").on("click", function() {
 	
 		if($(this).hasClass("not-current")) return;
@@ -242,13 +226,12 @@ window.onload = function() {
 			}
 			data = data.substring(0,data.length-1);
 			//console.log(data);
-			//console.log(data.length)
 		}		
 		tg.sendData(data);
 	});
   
 
-}
+});
 
 // Получить элемент по id
 function getId(id) {
