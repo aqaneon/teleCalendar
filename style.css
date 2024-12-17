@@ -1,1 +1,92 @@
+html,
+body {
+  height: 100%;
+}
+body {
+  font-size: 100%;
+  line-height: 1.5;
+  font-family: sans-serif;
+  color: var(--tg-theme-text-color);
+  background: var(--tg-theme-bg-color);
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: baseline;
+}
+a {
+  text-decoration: none;
+}
+.calendar-wrapper {
+  width: 400px;
+  margin: 3em auto;
+  padding: 1em;
+  border: 1px solid #dcdcff;
+  border-radius: 5px;
+  background: #fff;
+}
+table {
+  clear: both;
+  width: 100%;
+  border: 1px solid #dcdcff;
+  border-radius: 3px;
+  border-collapse: collapse;
+  color: #444;
+}
+td {
+  height: 48px;
+  text-align: center;
+  vertical-align: middle;
+  border-right: 1px solid #dcdcff;
+  border-top: 1px solid #dcdcff;
+  width: 14.28571429%;
+  cursor: pointer;
+}
+td.not-current {
+  color: #c0c0c0;
+  cursor: default;
+}
+td.today {
+  font-weight: 700;
+  color: #28283b;
+  font-size: 1.5em;
+}
+thead td {
+  border: none;
+  color: #28283b;
+  text-transform: uppercase;
+  font-size: 1.5em;
+}
+td.sunday {
+    background: #ff7c7c;    
+}
 
+.btn-group {
+	margin-bottom: 10px;
+}
+#sendGroup {
+	margin-top:10px;
+	margin-bottom: 10px;	
+}
+#divCal .office {
+	background-color: #27d026;
+}
+#divCal .remote {
+	background-color: #03a1fc;
+}
+#divCal .sick {
+	background-color: #ed3f3f;
+}
+#divCal .freedom {
+	background-color: #f2c015;
+}
