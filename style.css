@@ -90,3 +90,26 @@ td.sunday {
 #divCal .freedom {
 	background-color: #f2c015;
 }
+#legend span {
+  display: block;
+  margin: 1px 3px 0px 0px;
+}
+span:before {
+  content: "";
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+.one:before {
+  background: #27d026;
+}
+.two:before {
+  background: #03a1fc;
+}
+.three:before {
+  background: #ed3f3f;
+}
+.four:before {
+  background: #f2c015;
+}
