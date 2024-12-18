@@ -1,120 +1,248 @@
-html,
-body {
-  height: 100%;
-}
-body {
-  font-size: 100%;
-  line-height: 1.5;
-  font-family: sans-serif;
-  color: var(--tg-theme-text-color);
-  background: var(--tg-theme-bg-color);
-}
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
-.group:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-img {
-  max-width: 100%;
-  height: auto;
-  vertical-align: baseline;
-}
-a {
-  text-decoration: none;
-}
-.calendar-wrapper {
-  width: 100%;
-  margin: 3em auto;
-  padding: 1em;
-  border: 1px solid #dcdcff;
-  border-radius: 5px;
-  background: #fff;
-}
-table {
-  clear: both;
-  width: 100%;
-  border: 1px solid #dcdcff;
-  border-radius: 3px;
-  border-collapse: collapse;
-  color: #444;
-}
-td {
-  height: 48px;
-  text-align: center;
-  vertical-align: middle;
-  border-right: 1px solid #dcdcff;
-  border-top: 1px solid #dcdcff;
-  width: 14.28571429%;
-  cursor: pointer;
-}
-td.not-current {
-  color: #c0c0c0;
-  cursor: default;
-}
-td.today {
-  font-weight: 700;
-  color: #28283b;
-  font-size: 1.5em;
-}
-thead td {
-  border: none;
-  color: #28283b;
-  text-transform: uppercase;
-  font-size: 1.5em;
-}
-td.sunday {
-    background: #ff7c7c;    
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+	<div class="calendar-wrapper">
+		<div class="btn-group col-12" role="group" aria-label="Выберите тип">
+			<input type="radio" class="btn-check" autocomplete="off" name="typeName" id="option_2" checked>
+			<label class="btn btn-outline-primary" for="option_2">Офис</label>
+			
+			<input type="radio" class="btn-check" autocomplete="off" name="typeName" id="option_1">
+			<label class="btn btn-outline-primary" for="option_1">Удаленка</label>			
+			
+			<input type="radio" class="btn-check" autocomplete="off" name="typeName" id="option_3">
+			<label class="btn btn-outline-primary" for="option_3">Болен</label>
+			
+			<input type="radio" class="btn-check" autocomplete="off" name="typeName" id="option_4">
+			<label class="btn btn-outline-primary" for="option_4">Отпуск</label>
+		</div>
+		
+		<div id="divCal"></div>
+		<div id="sendGroup" class="btn-group col-12" role="group" aria-label="Выберите тип">
+			<input type="radio" class="btn-check" autocomplete="off" name="send" id="send" checked>
+			<label class="btn btn-outline-primary" for="send">Отправить</label>
+		</div>
+		<div id="legend">		  
+		  <span class='one'>Офис</span>
+		  <span class='two'>Удаленка</span>
+		  <span class='three'>Болен</span>
+		  <span class='four'>Отпуск</span>
+
+		</div>
+	</div>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
+<script>
+  let tg = window.Telegram.WebApp;
+  let style = new Map();
+  let styleType = new Map();
+  style.set(1,'remote');styleType.set('remote',1);
+  style.set(2,'office');styleType.set('office',2);
+  style.set(3,'sick');styleType.set('sick',3);
+  style.set(4,'freedom');styleType.set('freedom',4);
+var Cal = function(divId) {
+
+  //Сохраняем идентификатор div
+  this.divId = divId;
+
+  // Дни недели с понедельника
+  this.DaysOfWeek = [
+    'Пн',
+    'Вт',
+    'Ср',
+    'Чт',
+    'Пт',
+    'Сб',
+    'Вс'
+  ];
+
+  // Месяцы начиная с января
+  this.Months =['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+  
+
+  //Устанавливаем текущий месяц, год
+  var d = new Date();
+
+  this.currMonth = d.getMonth();
+  this.currYear = d.getFullYear();
+  this.currDay = d.getDate();
+
+  
+};
+
+// Показать текущий месяц
+Cal.prototype.showcurr = function() {
+  this.showMonth(this.currYear, this.currMonth);
+};
+
+
+
+// Показать месяц (год, месяц)
+Cal.prototype.showMonth = function(y, m) {
+
+  var d = new Date()
+  // Первый день недели в выбранном месяце 
+  , firstDayOfMonth = new Date(y, m, 7).getDay()
+  // Последний день выбранного месяца
+  , lastDateOfMonth =  new Date(y, m+1, 0).getDate()
+  // Последний день предыдущего месяца
+  , lastDayOfLastMonth = m == 0 ? new Date(y-1, 11, 0).getDate() : new Date(y, m, 0).getDate();
+  var html = '<table>';
+
+  // Запись выбранного месяца и года
+  html += '<thead><tr>';
+  html += '<td colspan="7">' + this.Months[m] + ' ' + y + '</td>';
+  html += '</tr></thead>';
+
+
+  // заголовок дней недели
+  html += '<tr class="days">';
+  for(var i=0; i < this.DaysOfWeek.length;i++) {
+    html += '<td>' + this.DaysOfWeek[i] + '</td>';
+  }
+  html += '</tr>';
+
+  // Записываем дни
+  var i=1;
+  do {
+
+    var dow = new Date(y, m, i).getDay();
+
+    // Начать новую строку в понедельник
+    if ( dow == 1 ) {
+      html += '<tr>';
+    }    
+    // Если первый день недели не понедельник показать последние дни предидущего месяца
+    else if ( i == 1 ) {
+      html += '<tr>';
+      var k = lastDayOfLastMonth - firstDayOfMonth+1;
+      for(var j=0; j < firstDayOfMonth; j++) {
+	    var holiday = "";
+	    if(firstDayOfMonth == 6 && k == lastDayOfLastMonth) holiday = " sunday";
+        html += '<td class="not-current' + holiday + '">' + k + '</td>';
+        k++;
+      }
+    }
+	
+	var holiday = "";
+	if(dow == 6 || dow == 0) {
+		holiday = " sunday";
+	}
+
+    // Записываем текущий день в цикл
+    var chk = new Date();
+    var chkY = chk.getFullYear();
+    var chkM = chk.getMonth();
+    if (chkY == this.currYear && chkM == this.currMonth && i == this.currDay) {
+      html += '<td id="d_' + i + '" class="today' + holiday + '">' + i + '</td>';
+    } else {
+      html += '<td id="d_' + i + '" class="normal' + holiday + '">' + i + '</td>';
+    }
+    // закрыть строку в воскресенье
+    if ( dow == 0 ) {
+      html += '</tr>';
+    }
+    // Если последний день месяца не воскресенье, показать первые дни следующего месяца
+    else if ( i == lastDateOfMonth ) {
+      var k=1;
+      for(dow; dow < 7; dow++) {
+		if(dow == 6 || dow == 5) {
+			holiday = " sunday";
+		}
+        html += '<td class="not-current' + holiday + '">' + k + '</td>';
+        k++;
+      }
+    }
+
+    i++;
+  }while(i <= lastDateOfMonth);
+
+  // Конец таблицы
+  html += '</table>';
+
+  // Записываем HTML в div
+  document.getElementById(this.divId).innerHTML = html;
+  
+};
+
+// При загрузке окна
+(window.onload = function() {
+	
+	// Начать календарь
+	var c = new Cal("divCal");			
+	c.showcurr();
+	
+	//Парсим входящий get параметр
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	let dt = urlParams.get('data').split("|");
+	
+  //Заполняем календарь данными
+	for(let d of dt) {
+		let day = d.split(":")[0];
+		let type = d.split(":")[1];
+		$("#d_"+day+"").addClass(style.get(parseInt(type)));
+	}
+	
+	
+	$("#divCal table td").on("click", function() {
+	
+		if($(this).hasClass("not-current")) return;
+		
+		let str_text = $(this).html();
+		let typeDay = parseInt($(".btn-check:checked").attr("id").split("_")[1]);
+		let allStyles = "";
+		for(let en of style.values()) {
+			allStyles += " "+en;
+		};
+		if($(this).hasClass(style.get(typeDay))) {
+			$(this).removeClass(allStyles);
+		}
+		else {
+			$(this).removeClass(allStyles).addClass(style.get(typeDay));
+		}		
+
+	});
+	$("#send").on("click", function() {
+		let data = "";
+		allClass = "";
+		for(let en of style.values()) {
+			allClass += "."+en+",";
+		};
+		allClass = allClass.substring(0,allClass.length-1);
+		let allCheckedTD = $(allClass); 
+		if(allCheckedTD.length > 0) {			
+			for(let elem of allCheckedTD) {
+				let day = elem.id.split("_")[1];
+				elem.classList.remove("normal");
+				elem.classList.remove("today");
+				elem.classList.remove("not-current");
+				elem.classList.remove("sunday");
+				
+				let type = styleType.get(elem.className);
+				data += day+":"+type+"|";
+				//console.log("day - "+day+" type - "+type);
+			}
+			data = data.substring(0,data.length-1);
+			//console.log(data);
+		}		
+		tg.sendData(data);
+	});
+  
+
+});
+
+// Получить элемент по id
+function getId(id) {
+  return document.getElementById(id);
 }
 
-.btn-group {
-	margin-bottom: 10px;
-}
-#sendGroup {
-	margin-top:10px;
-	margin-bottom: 10px;	
-}
-#divCal .office {
-	background-color: #27d026;
-}
-#divCal .remote {
-	background-color: #03a1fc;
-}
-#divCal .sick {
-	background-color: #ed3f3f;
-}
-#divCal .freedom {
-	background-color: #f2c015;
-}
-#legend {
-  margin-bottom: 20px;
-}
-#legend span {
-  display: block;
-  margin: 1px 3px 0px 0px;
-  float: left;
-  margin-right: 20px;
-}
-span:before {
-  content: "";
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  margin-right: 5px;
-}
-.one:before {
-  background: #27d026;
-}
-.two:before {
-  background: #03a1fc;
-}
-.three:before {
-  background: #ed3f3f;
-}
-.four:before {
-  background: #f2c015;
-}
+</script>
