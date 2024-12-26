@@ -120,6 +120,8 @@ Cal.prototype.previousMonth = function() {
   }
   this.showcurr();
   this.position = "start";
+  let period = (this.currMonth+1)+':'+this.currYear;  
+  fillCalendar(dt,period);
 };
 
 
