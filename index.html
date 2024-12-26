@@ -140,14 +140,14 @@ Cal.prototype.showMonth = function(y, m) {
 
   // Запись выбранного месяца и года
   html += '<thead><tr>';
-  html += '<td colspan="7">' + this.Months[m] + ' ' + y + '</td>';
+  html += '<td colspan="7" class="not-days">' + this.Months[m] + ' ' + y + '</td>';
   html += '</tr></thead>';
 
 
   // заголовок дней недели
   html += '<tr class="days">';
   for(var i=0; i < this.DaysOfWeek.length;i++) {
-    html += '<td>' + this.DaysOfWeek[i] + '</td>';
+    html += '<td class="not-days">' + this.DaysOfWeek[i] + '</td>';
   }
   html += '</tr>';
 
@@ -218,7 +218,7 @@ Cal.prototype.showMonth = function(y, m) {
 		let mDays = dt[c.getcurr()];
 		//console.log(c.getcurr())
 		//Если дата с предыдущего/следующего месяца ничего не делаем
-		if($(this).hasClass("not-current")) return;
+		if($(this).hasClass("not-current") || $(this).hasClass("not-days")) return;
 		// получаем текст и выбранный тип для дня 
 		let str_text = $(this).html();
 		let typeDay = parseInt($(".btn-check:checked").attr("id").split("_")[1]);
