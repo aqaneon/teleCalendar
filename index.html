@@ -80,7 +80,9 @@ var Cal = function(divId) {
 
   this.currMonth = d.getMonth();
   this.currYear = d.getFullYear();
-  this.currDay = d.getDate();  
+  this.currDay = d.getDate(); 
+  this.position = "start";
+  
 };
 
 // Показать текущий месяц
@@ -102,6 +104,7 @@ Cal.prototype.nextMonth = function() {
     this.currMonth = this.currMonth + 1;
   }
   this.showcurr();
+  this.position = "end";
   let period = (this.currMonth+1)+':'+this.currYear;  
   fillCalendar(dt,period);
 };
@@ -116,6 +119,7 @@ Cal.prototype.previousMonth = function() {
     this.currMonth = this.currMonth - 1;
   }
   this.showcurr();
+  this.position = "start";
 };
 
 
@@ -339,9 +343,9 @@ function fillCalendar(arr,period) {
 </script>
 <script>
 document.addEventListener('swiped-left', function(e) {
-  alert("swiped-left");
+  if(c.position == "start") c.nextMonth();
 });
 document.addEventListener('swiped-right', function(e) {
-  alert("swiped-right");
+  if(c.position == "end") c.previousMonth();
 });
 </script>
