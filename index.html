@@ -283,12 +283,13 @@ Cal.prototype.showMonth = function(y, m) {
 		let data = "$"+user_id+"$";		
 		let keys = Object.keys(dt);	
 		for(let key of keys) {
-		  data = data+"!"+key+"!";
-		  let list_day = "{";		  
+		  data = data+"!"+key+"!{";
+		  let list_day = "";		  
 		  dt[key].forEach(function(value,key){		  
 			list_day = list_day+key+":"+value+"|";
 		  });
-		  list_day = list_day.substring(0,list_day.length-1) + "}";
+		  if(list_day.length > 0) list_day = list_day.substring(0,list_day.length-1) + "}";
+		  else list_day = list_day + "}";
 		  data = data + list_day + "@@";		  
 		}
 		data = data.substring(0,data.length-2);
