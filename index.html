@@ -319,13 +319,16 @@ function parseQuery() {
 		for(let data of data_array) {
 			let matches = data.match("!(.*)!{(.*)}");
 			let monthAndYear = matches[1];
-			let temp = matches[2].split("|");
-			let days = new Map();
-			for(let e of temp) {				
-				let sp = e.split(":")
-				days.set(sp[0],sp[1]);
+			if(matches[2].length > 0){
+				let temp = matches[2].split("|");			
+				let days = new Map();
+				for(let e of temp) {				
+					let sp = e.split(":")
+					days.set(sp[0],sp[1]);
+				}
+				arr[monthAndYear] = days;			
 			}
-			arr[monthAndYear] = days;			
+			else arr[monthAndYear] = new Map();
 		}
 		return arr;
 	}
